@@ -1,13 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  create(createUserDto: CreateUserDto) {}
+  @UsePipes(new ValidationPipe({ transform: true }))
+  create(body: CreateUserDto) {
+    return this.prisma.user.create({
+      data: body,
+    })
+  }
 
   findAll() {
     return `This action returns all user`;
