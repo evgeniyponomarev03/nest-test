@@ -1,21 +1,18 @@
-import {
-  Injectable,
-  NotFoundException,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  @UsePipes(new ValidationPipe({ transform: true }))
-  create(body: CreateUserDto) {
+  async create(body: CreateUserDto) {
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+
     return this.prisma.user.create({
-      data: body,
+      data: { ...body, password: hashedPassword },
     });
   }
 
@@ -29,6 +26,16 @@ export class UserService {
     return {
       result: user,
     };
+  }
+
+  async findOneByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
