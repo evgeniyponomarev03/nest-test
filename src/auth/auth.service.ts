@@ -2,11 +2,9 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
@@ -20,15 +18,8 @@ export class AuthService {
   async signIn(body: any) {
     const user = await this.user.findOneByEmail(body.email);
 
-    console.log({ user });
-
     if (!user) {
       throw new NotFoundException(`User with email ${body.email} not found`);
-    }
-
-    const passwordMatches = await bcrypt.compare(body.password, user.password);
-    if (!passwordMatches) {
-      throw new UnauthorizedException();
     }
 
     const payload = {
