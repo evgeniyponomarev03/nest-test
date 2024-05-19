@@ -6,6 +6,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
+import { SignInDto } from './dto/singin.dto';
+import { SignUpDto } from './dto/signup.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +17,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(body: any) {
+  async signIn(body: SignInDto) {
     const user = await this.user.findOneByEmail(body.email);
 
     if (!user) {
@@ -42,7 +44,7 @@ export class AuthService {
     };
   }
 
-  async signUp(body: any) {
+  async signUp(body: SignUpDto) {
     const user = await this.user.findOneByEmail(body.email);
 
     if (user) {

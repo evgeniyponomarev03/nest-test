@@ -16,13 +16,16 @@ export class PasswordValidationMiddleware implements NestMiddleware {
     const user = await this.user.findOneByEmail(req.body.email);
 
     if (!user) {
-      throw new NotFoundException(`User with email ${req.body.email} not found`);
+      throw new NotFoundException(
+        `User with email ${req.body.email} not found`,
+      );
     }
 
     const passwordMatches = await bcrypt.compare(
       req.body.password,
       user?.password,
     );
+
     if (!passwordMatches) {
       throw new UnauthorizedException();
     }
